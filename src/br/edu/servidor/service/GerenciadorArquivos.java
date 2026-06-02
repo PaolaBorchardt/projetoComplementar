@@ -22,14 +22,26 @@ public class GerenciadorArquivos {
     public synchronized List<ArquivoInfo> listarArquivos() {
         List<ArquivoInfo> lista = new ArrayList<>();
         File[] arquivos = diretorio.listFiles();
+
         if (arquivos != null) {
             for (File arquivo : arquivos) {
                 if (arquivo.isFile()) {
-                    int downloads = contadorDownloads.getOrDefault(arquivo.getName(), 0);
-                    lista.add(new ArquivoInfo(arquivo.getName(), arquivo.length(), downloads));
+                    int downloads = contadorDownloads.getOrDefault(
+                            arquivo.getName(), 0);
+
+                    lista.add(
+                            new ArquivoInfo(
+                                    arquivo.getName(),
+                                    arquivo.length(),
+                                    downloads));
                 }
             }
         }
+
+        // ADIÇÃO
+        // Ordena os arquivos pelo tamanho em ordem crescente
+        selectionSort(lista);
+
         return lista;
     }
 
@@ -52,5 +64,30 @@ public class GerenciadorArquivos {
                     .append(arquivo.getDownloads()).append("\n");
         }
         return sb.toString();
+    }
+
+    // ADIÇÃO
+    // Método Selection Sort para ordenar pelo tamanho do arquivo
+    private void selectionSort(List<ArquivoInfo> lista) {
+
+        int n = lista.size();
+
+        for (int i = 0; i < n - 1; i++) {
+
+            int menor = i;
+
+            for (int j = i + 1; j < n; j++) {
+
+                if (lista.get(j).getTamanho()
+                        < lista.get(menor).getTamanho()) {
+
+                    menor = j;
+                }
+            }
+
+            ArquivoInfo temp = lista.get(i);
+            lista.set(i, lista.get(menor));
+            lista.set(menor, temp);
+        }
     }
 }
